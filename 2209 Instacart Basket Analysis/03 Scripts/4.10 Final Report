@@ -1,0 +1,1920 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "cad3b1e7",
+   "metadata": {},
+   "source": [
+    "# **4.10 Final Instacart Report**"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "52bf9e10",
+   "metadata": {},
+   "source": [
+    "## _Contents_"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "59f7cb12",
+   "metadata": {},
+   "source": [
+    "#### 1. Libaries and Data "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "0aaa2f1d",
+   "metadata": {},
+   "source": [
+    "#### 2. Security Implications / PII Data"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "851fe25f",
+   "metadata": {},
+   "source": [
+    "#### 3. Customer Behavior in different Geographic Areas"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "5671a10d",
+   "metadata": {},
+   "source": [
+    "#### 4. Detecting Low-Activity Customers / Low Revenue "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "dbb728f5",
+   "metadata": {},
+   "source": [
+    "#### 5. Marketing & Business: Customer Profiling"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "dbe17cdc",
+   "metadata": {},
+   "source": [
+    "#### 6. Visualisation of Profiles"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "d6a3e332",
+   "metadata": {},
+   "source": [
+    "#### 7. Aggregation / Customer-Profiles"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1dc7f4e7",
+   "metadata": {},
+   "source": [
+    "#### 8. Comparing Customer Profiles with Regions"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "a8935ba8",
+   "metadata": {},
+   "source": [
+    "#### 9. Illustration of Results"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8dcf1a82",
+   "metadata": {},
+   "source": [
+    "\n",
+    "\n",
+    "\n",
+    "## _Script_"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "40dbe5a0",
+   "metadata": {},
+   "source": [
+    "## 1. Libaries and Data "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "703843f9",
+   "metadata": {},
+   "source": [
+    "Firstly I am loading all necessary libaries as well as the dataset."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "b975845b",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "#import libaries \n",
+    "\n",
+    "import pandas as pd\n",
+    "import numpy as np\n",
+    "import os\n",
+    "import matplotlib.pyplot as plt\n",
+    "import seaborn as sns\n",
+    "import scipy"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "ccdc11ae",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# defining path\n",
+    "path = r'C:\\Users\\tinar\\OneDrive\\Dokumente\\00 DATA ANALYST Carrer Foundry\\04 Immersion Course\\4. Python Fundamentals for Data Analysts\\2209 Instacart Basket Analysis'"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "5f3ff7fc",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# import of orders_products_customers\n",
+    "ords_prods_custo = pd.read_pickle(os.path.join(path, '02 Data', '02 Prepared Data', 'instacart_data_complete.pkl'))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "9570c582",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "89a6ea64",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# correcting a spelling mistake in \"family_members\"\n",
+    "ords_prods_custo.rename(columns = {'familiy_members' : 'family_members'}, inplace = True)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "3e105dcb",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# adjusting the varibale name\n",
+    "ords_prods_custo.rename(columns = {'fam_status' : 'family_status'}, inplace = True)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "634cd8fe",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>order_id</th>\n",
+       "      <th>user_id</th>\n",
+       "      <th>order_number</th>\n",
+       "      <th>orders_day_of_week</th>\n",
+       "      <th>order_hour_of_day</th>\n",
+       "      <th>days_since_prior_order</th>\n",
+       "      <th>product_id</th>\n",
+       "      <th>add_to_cart_order</th>\n",
+       "      <th>reordered</th>\n",
+       "      <th>product_name</th>\n",
+       "      <th>...</th>\n",
+       "      <th>frequency_flag</th>\n",
+       "      <th>first_name</th>\n",
+       "      <th>last_name</th>\n",
+       "      <th>gender</th>\n",
+       "      <th>state</th>\n",
+       "      <th>age</th>\n",
+       "      <th>date_joined</th>\n",
+       "      <th>family_members</th>\n",
+       "      <th>family_status</th>\n",
+       "      <th>income</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>2539329</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>2</td>\n",
+       "      <td>8</td>\n",
+       "      <td>11.11484</td>\n",
+       "      <td>196</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>Soda</td>\n",
+       "      <td>...</td>\n",
+       "      <td>Regular customer</td>\n",
+       "      <td>Linda</td>\n",
+       "      <td>Nguyen</td>\n",
+       "      <td>Female</td>\n",
+       "      <td>Alabama</td>\n",
+       "      <td>31</td>\n",
+       "      <td>2/17/2019</td>\n",
+       "      <td>3</td>\n",
+       "      <td>married</td>\n",
+       "      <td>40423</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>2398795</td>\n",
+       "      <td>1</td>\n",
+       "      <td>2</td>\n",
+       "      <td>3</td>\n",
+       "      <td>7</td>\n",
+       "      <td>15.00000</td>\n",
+       "      <td>196</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>Soda</td>\n",
+       "      <td>...</td>\n",
+       "      <td>Regular customer</td>\n",
+       "      <td>Linda</td>\n",
+       "      <td>Nguyen</td>\n",
+       "      <td>Female</td>\n",
+       "      <td>Alabama</td>\n",
+       "      <td>31</td>\n",
+       "      <td>2/17/2019</td>\n",
+       "      <td>3</td>\n",
+       "      <td>married</td>\n",
+       "      <td>40423</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>473747</td>\n",
+       "      <td>1</td>\n",
+       "      <td>3</td>\n",
+       "      <td>3</td>\n",
+       "      <td>12</td>\n",
+       "      <td>21.00000</td>\n",
+       "      <td>196</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>Soda</td>\n",
+       "      <td>...</td>\n",
+       "      <td>Regular customer</td>\n",
+       "      <td>Linda</td>\n",
+       "      <td>Nguyen</td>\n",
+       "      <td>Female</td>\n",
+       "      <td>Alabama</td>\n",
+       "      <td>31</td>\n",
+       "      <td>2/17/2019</td>\n",
+       "      <td>3</td>\n",
+       "      <td>married</td>\n",
+       "      <td>40423</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>2254736</td>\n",
+       "      <td>1</td>\n",
+       "      <td>4</td>\n",
+       "      <td>4</td>\n",
+       "      <td>7</td>\n",
+       "      <td>29.00000</td>\n",
+       "      <td>196</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>Soda</td>\n",
+       "      <td>...</td>\n",
+       "      <td>Regular customer</td>\n",
+       "      <td>Linda</td>\n",
+       "      <td>Nguyen</td>\n",
+       "      <td>Female</td>\n",
+       "      <td>Alabama</td>\n",
+       "      <td>31</td>\n",
+       "      <td>2/17/2019</td>\n",
+       "      <td>3</td>\n",
+       "      <td>married</td>\n",
+       "      <td>40423</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>431534</td>\n",
+       "      <td>1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>4</td>\n",
+       "      <td>15</td>\n",
+       "      <td>28.00000</td>\n",
+       "      <td>196</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>Soda</td>\n",
+       "      <td>...</td>\n",
+       "      <td>Regular customer</td>\n",
+       "      <td>Linda</td>\n",
+       "      <td>Nguyen</td>\n",
+       "      <td>Female</td>\n",
+       "      <td>Alabama</td>\n",
+       "      <td>31</td>\n",
+       "      <td>2/17/2019</td>\n",
+       "      <td>3</td>\n",
+       "      <td>married</td>\n",
+       "      <td>40423</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>5 rows × 33 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   order_id user_id  order_number  orders_day_of_week  order_hour_of_day  \\\n",
+       "0   2539329       1             1                   2                  8   \n",
+       "1   2398795       1             2                   3                  7   \n",
+       "2    473747       1             3                   3                 12   \n",
+       "3   2254736       1             4                   4                  7   \n",
+       "4    431534       1             5                   4                 15   \n",
+       "\n",
+       "   days_since_prior_order  product_id  add_to_cart_order  reordered  \\\n",
+       "0                11.11484         196                  1          0   \n",
+       "1                15.00000         196                  1          1   \n",
+       "2                21.00000         196                  1          1   \n",
+       "3                29.00000         196                  1          1   \n",
+       "4                28.00000         196                  1          1   \n",
+       "\n",
+       "  product_name  ...    frequency_flag  first_name  last_name  gender    state  \\\n",
+       "0         Soda  ...  Regular customer       Linda     Nguyen  Female  Alabama   \n",
+       "1         Soda  ...  Regular customer       Linda     Nguyen  Female  Alabama   \n",
+       "2         Soda  ...  Regular customer       Linda     Nguyen  Female  Alabama   \n",
+       "3         Soda  ...  Regular customer       Linda     Nguyen  Female  Alabama   \n",
+       "4         Soda  ...  Regular customer       Linda     Nguyen  Female  Alabama   \n",
+       "\n",
+       "  age date_joined family_members  family_status income  \n",
+       "0  31   2/17/2019              3        married  40423  \n",
+       "1  31   2/17/2019              3        married  40423  \n",
+       "2  31   2/17/2019              3        married  40423  \n",
+       "3  31   2/17/2019              3        married  40423  \n",
+       "4  31   2/17/2019              3        married  40423  \n",
+       "\n",
+       "[5 rows x 33 columns]"
+      ]
+     },
+     "execution_count": 6,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "ords_prods_custo.head(5)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "c519917a",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# changing the data typ to have a integer for days_since_prior_order\n",
+    "ords_prods_custo['days_since_prior_order'] = ords_prods_custo['days_since_prior_order'].astype('int')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "id": "9fc11845",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "order_id                            int64\n",
+       "user_id                            object\n",
+       "order_number                        int64\n",
+       "orders_day_of_week                  int64\n",
+       "order_hour_of_day                   int64\n",
+       "days_since_prior_order              int32\n",
+       "product_id                          int64\n",
+       "add_to_cart_order                   int64\n",
+       "reordered                           int64\n",
+       "product_name                       object\n",
+       "aisle_id                            int64\n",
+       "department_id                       int64\n",
+       "prices                            float64\n",
+       "_merge                           category\n",
+       "price_range_loc                    object\n",
+       "busiest_day                        object\n",
+       "busiest_days                       object\n",
+       "busiest_time_of_the_day            object\n",
+       "max_order                           int64\n",
+       "loyalty_flag                       object\n",
+       "avg_price                         float64\n",
+       "spender_flag                       object\n",
+       "median_days_since_prior_order     float64\n",
+       "frequency_flag                     object\n",
+       "first_name                         object\n",
+       "last_name                          object\n",
+       "gender                             object\n",
+       "state                              object\n",
+       "age                                 int64\n",
+       "date_joined                        object\n",
+       "family_members                      int64\n",
+       "family_status                      object\n",
+       "income                              int64\n",
+       "dtype: object"
+      ]
+     },
+     "execution_count": 19,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "ords_prods_custo.dtypes"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "0fcfa2af",
+   "metadata": {},
+   "source": [
+    "## 2. Security Implications / PII Data"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "5311b332",
+   "metadata": {},
+   "source": [
+    "Addressing any PII data in the data before continuing the analysis. \n",
+    "Since we have the first_names in combination with the last_names the data can be traced back to a particular person.\n",
+    "Therefore I would drop or exclude the coloumns first_name and last_name. \n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "e0243d7b",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# dropping first_name and last_name\n",
+    "ords_prods_custo = ords_prods_custo.drop(columns = ['first_name', 'last_name'])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "id": "7c55750c",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "(30629741, 33)"
+      ]
+     },
+     "execution_count": 12,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "ords_prods_custo.shape"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "id": "ad3e660d",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>order_id</th>\n",
+       "      <th>user_id</th>\n",
+       "      <th>order_number</th>\n",
+       "      <th>orders_day_of_week</th>\n",
+       "      <th>order_hour_of_day</th>\n",
+       "      <th>days_since_prior_order</th>\n",
+       "      <th>product_id</th>\n",
+       "      <th>add_to_cart_order</th>\n",
+       "      <th>reordered</th>\n",
+       "      <th>product_name</th>\n",
+       "      <th>...</th>\n",
+       "      <th>spender_flag</th>\n",
+       "      <th>median_days_since_prior_order</th>\n",
+       "      <th>frequency_flag</th>\n",
+       "      <th>gender</th>\n",
+       "      <th>state</th>\n",
+       "      <th>age</th>\n",
+       "      <th>date_joined</th>\n",
+       "      <th>family_members</th>\n",
+       "      <th>family_status</th>\n",
+       "      <th>income</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>2539329</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>2</td>\n",
+       "      <td>8</td>\n",
+       "      <td>11</td>\n",
+       "      <td>196</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>Soda</td>\n",
+       "      <td>...</td>\n",
+       "      <td>Low spender</td>\n",
+       "      <td>20.0</td>\n",
+       "      <td>Regular customer</td>\n",
+       "      <td>Female</td>\n",
+       "      <td>Alabama</td>\n",
+       "      <td>31</td>\n",
+       "      <td>2/17/2019</td>\n",
+       "      <td>3</td>\n",
+       "      <td>married</td>\n",
+       "      <td>40423</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>2398795</td>\n",
+       "      <td>1</td>\n",
+       "      <td>2</td>\n",
+       "      <td>3</td>\n",
+       "      <td>7</td>\n",
+       "      <td>15</td>\n",
+       "      <td>196</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>Soda</td>\n",
+       "      <td>...</td>\n",
+       "      <td>Low spender</td>\n",
+       "      <td>20.0</td>\n",
+       "      <td>Regular customer</td>\n",
+       "      <td>Female</td>\n",
+       "      <td>Alabama</td>\n",
+       "      <td>31</td>\n",
+       "      <td>2/17/2019</td>\n",
+       "      <td>3</td>\n",
+       "      <td>married</td>\n",
+       "      <td>40423</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>473747</td>\n",
+       "      <td>1</td>\n",
+       "      <td>3</td>\n",
+       "      <td>3</td>\n",
+       "      <td>12</td>\n",
+       "      <td>21</td>\n",
+       "      <td>196</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>Soda</td>\n",
+       "      <td>...</td>\n",
+       "      <td>Low spender</td>\n",
+       "      <td>20.0</td>\n",
+       "      <td>Regular customer</td>\n",
+       "      <td>Female</td>\n",
+       "      <td>Alabama</td>\n",
+       "      <td>31</td>\n",
+       "      <td>2/17/2019</td>\n",
+       "      <td>3</td>\n",
+       "      <td>married</td>\n",
+       "      <td>40423</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>2254736</td>\n",
+       "      <td>1</td>\n",
+       "      <td>4</td>\n",
+       "      <td>4</td>\n",
+       "      <td>7</td>\n",
+       "      <td>29</td>\n",
+       "      <td>196</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>Soda</td>\n",
+       "      <td>...</td>\n",
+       "      <td>Low spender</td>\n",
+       "      <td>20.0</td>\n",
+       "      <td>Regular customer</td>\n",
+       "      <td>Female</td>\n",
+       "      <td>Alabama</td>\n",
+       "      <td>31</td>\n",
+       "      <td>2/17/2019</td>\n",
+       "      <td>3</td>\n",
+       "      <td>married</td>\n",
+       "      <td>40423</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>431534</td>\n",
+       "      <td>1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>4</td>\n",
+       "      <td>15</td>\n",
+       "      <td>28</td>\n",
+       "      <td>196</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>Soda</td>\n",
+       "      <td>...</td>\n",
+       "      <td>Low spender</td>\n",
+       "      <td>20.0</td>\n",
+       "      <td>Regular customer</td>\n",
+       "      <td>Female</td>\n",
+       "      <td>Alabama</td>\n",
+       "      <td>31</td>\n",
+       "      <td>2/17/2019</td>\n",
+       "      <td>3</td>\n",
+       "      <td>married</td>\n",
+       "      <td>40423</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>5 rows × 31 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   order_id user_id  order_number  orders_day_of_week  order_hour_of_day  \\\n",
+       "0   2539329       1             1                   2                  8   \n",
+       "1   2398795       1             2                   3                  7   \n",
+       "2    473747       1             3                   3                 12   \n",
+       "3   2254736       1             4                   4                  7   \n",
+       "4    431534       1             5                   4                 15   \n",
+       "\n",
+       "   days_since_prior_order  product_id  add_to_cart_order  reordered  \\\n",
+       "0                      11         196                  1          0   \n",
+       "1                      15         196                  1          1   \n",
+       "2                      21         196                  1          1   \n",
+       "3                      29         196                  1          1   \n",
+       "4                      28         196                  1          1   \n",
+       "\n",
+       "  product_name  ...  spender_flag  median_days_since_prior_order  \\\n",
+       "0         Soda  ...   Low spender                           20.0   \n",
+       "1         Soda  ...   Low spender                           20.0   \n",
+       "2         Soda  ...   Low spender                           20.0   \n",
+       "3         Soda  ...   Low spender                           20.0   \n",
+       "4         Soda  ...   Low spender                           20.0   \n",
+       "\n",
+       "     frequency_flag  gender    state age date_joined family_members  \\\n",
+       "0  Regular customer  Female  Alabama  31   2/17/2019              3   \n",
+       "1  Regular customer  Female  Alabama  31   2/17/2019              3   \n",
+       "2  Regular customer  Female  Alabama  31   2/17/2019              3   \n",
+       "3  Regular customer  Female  Alabama  31   2/17/2019              3   \n",
+       "4  Regular customer  Female  Alabama  31   2/17/2019              3   \n",
+       "\n",
+       "   family_status income  \n",
+       "0        married  40423  \n",
+       "1        married  40423  \n",
+       "2        married  40423  \n",
+       "3        married  40423  \n",
+       "4        married  40423  \n",
+       "\n",
+       "[5 rows x 31 columns]"
+      ]
+     },
+     "execution_count": 11,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# checking that columns were successfully dropped\n",
+    "ords_prods_custo.head(5)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "id": "02bf4656",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# saving the dataframe  PII confirm data frame\n",
+    "ords_prods_custo.to_pickle(os.path.join(path, '02 Data','02 Prepared Data','ords_prods_custo_PII.pkl'))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "5a0a7d02",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "markdown",
+   "id": "9a9df110",
+   "metadata": {},
+   "source": [
+    "## 3. Customer Behavior in different Geographic Areas"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "01abfb3a",
+   "metadata": {},
+   "source": [
+    "The Instacart officers are interested in comparing customer behavior in different geographic areas. Therefore we create a regional segmentation of the data and use the following region information: https://simple.wikipedia.org/wiki/List_of_regions_of_the_United_States\n",
+    "\n",
+    "In a second step we will determine whether there’s a difference in spending habits between the different U.S. regions. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "id": "725fc890",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# creating 4 different regions\n",
+    "\n",
+    "northeast = ['Maine','New Hampshire','Vermont','Massachusetts','Rhode Island','Connecticut','New York','Pennsylvania','New Jersey']\n",
+    "midwest = ['Wisconsin','Michigan','Illinois','Indiana','Ohio','North Dakota','South Dakota','Nebraska','Kansas','Minnesota','Iowa','Missouri']\n",
+    "south = ['Delaware','Maryland','District of Columbia','Virginia','West Virginia','North Carolina','South Carolina','Georgia','Florida','Kentucky', 'Tennessee','Mississippi','Alabama','Oklahoma','Texas','Arkansas','Louisiana']\n",
+    "west = ['Idaho','Montana','Wyoming','Nevada','Utah','Colorado','Arizona','New Mexico','Alaska','Washington','Oregon','California','Hawaii']"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "id": "14263f3b",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# creating region flags with loc\n",
+    "\n",
+    "ords_prods_custo.loc[ords_prods_custo['state'].isin(northeast), 'region'] = 'Northeast'\n",
+    "ords_prods_custo.loc[ords_prods_custo['state'].isin(midwest), 'region'] = 'Midwest'\n",
+    "ords_prods_custo.loc[ords_prods_custo['state'].isin(south), 'region'] = 'South'\n",
+    "ords_prods_custo.loc[ords_prods_custo['state'].isin(west), 'region'] = 'West'"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "id": "e66feafa",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "South        10198982\n",
+       "West          7831810\n",
+       "Midwest       7176924\n",
+       "Northeast     5422025\n",
+       "Name: region, dtype: int64"
+      ]
+     },
+     "execution_count": 19,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# checking the frequency of the diffrent regions\n",
+    "ords_prods_custo['region'].value_counts(dropna = False)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "id": "c201fa41",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>order_id</th>\n",
+       "      <th>user_id</th>\n",
+       "      <th>order_number</th>\n",
+       "      <th>orders_day_of_week</th>\n",
+       "      <th>order_hour_of_day</th>\n",
+       "      <th>days_since_prior_order</th>\n",
+       "      <th>product_id</th>\n",
+       "      <th>add_to_cart_order</th>\n",
+       "      <th>reordered</th>\n",
+       "      <th>product_name</th>\n",
+       "      <th>...</th>\n",
+       "      <th>median_days_since_prior_order</th>\n",
+       "      <th>frequency_flag</th>\n",
+       "      <th>gender</th>\n",
+       "      <th>state</th>\n",
+       "      <th>age</th>\n",
+       "      <th>date_joined</th>\n",
+       "      <th>family_members</th>\n",
+       "      <th>family_status</th>\n",
+       "      <th>income</th>\n",
+       "      <th>region</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>2539329</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>2</td>\n",
+       "      <td>8</td>\n",
+       "      <td>11</td>\n",
+       "      <td>196</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>Soda</td>\n",
+       "      <td>...</td>\n",
+       "      <td>20.0</td>\n",
+       "      <td>Regular customer</td>\n",
+       "      <td>Female</td>\n",
+       "      <td>Alabama</td>\n",
+       "      <td>31</td>\n",
+       "      <td>2/17/2019</td>\n",
+       "      <td>3</td>\n",
+       "      <td>married</td>\n",
+       "      <td>40423</td>\n",
+       "      <td>South</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>2398795</td>\n",
+       "      <td>1</td>\n",
+       "      <td>2</td>\n",
+       "      <td>3</td>\n",
+       "      <td>7</td>\n",
+       "      <td>15</td>\n",
+       "      <td>196</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>Soda</td>\n",
+       "      <td>...</td>\n",
+       "      <td>20.0</td>\n",
+       "      <td>Regular customer</td>\n",
+       "      <td>Female</td>\n",
+       "      <td>Alabama</td>\n",
+       "      <td>31</td>\n",
+       "      <td>2/17/2019</td>\n",
+       "      <td>3</td>\n",
+       "      <td>married</td>\n",
+       "      <td>40423</td>\n",
+       "      <td>South</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>473747</td>\n",
+       "      <td>1</td>\n",
+       "      <td>3</td>\n",
+       "      <td>3</td>\n",
+       "      <td>12</td>\n",
+       "      <td>21</td>\n",
+       "      <td>196</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>Soda</td>\n",
+       "      <td>...</td>\n",
+       "      <td>20.0</td>\n",
+       "      <td>Regular customer</td>\n",
+       "      <td>Female</td>\n",
+       "      <td>Alabama</td>\n",
+       "      <td>31</td>\n",
+       "      <td>2/17/2019</td>\n",
+       "      <td>3</td>\n",
+       "      <td>married</td>\n",
+       "      <td>40423</td>\n",
+       "      <td>South</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>2254736</td>\n",
+       "      <td>1</td>\n",
+       "      <td>4</td>\n",
+       "      <td>4</td>\n",
+       "      <td>7</td>\n",
+       "      <td>29</td>\n",
+       "      <td>196</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>Soda</td>\n",
+       "      <td>...</td>\n",
+       "      <td>20.0</td>\n",
+       "      <td>Regular customer</td>\n",
+       "      <td>Female</td>\n",
+       "      <td>Alabama</td>\n",
+       "      <td>31</td>\n",
+       "      <td>2/17/2019</td>\n",
+       "      <td>3</td>\n",
+       "      <td>married</td>\n",
+       "      <td>40423</td>\n",
+       "      <td>South</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>431534</td>\n",
+       "      <td>1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>4</td>\n",
+       "      <td>15</td>\n",
+       "      <td>28</td>\n",
+       "      <td>196</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>Soda</td>\n",
+       "      <td>...</td>\n",
+       "      <td>20.0</td>\n",
+       "      <td>Regular customer</td>\n",
+       "      <td>Female</td>\n",
+       "      <td>Alabama</td>\n",
+       "      <td>31</td>\n",
+       "      <td>2/17/2019</td>\n",
+       "      <td>3</td>\n",
+       "      <td>married</td>\n",
+       "      <td>40423</td>\n",
+       "      <td>South</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>5 rows × 32 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   order_id user_id  order_number  orders_day_of_week  order_hour_of_day  \\\n",
+       "0   2539329       1             1                   2                  8   \n",
+       "1   2398795       1             2                   3                  7   \n",
+       "2    473747       1             3                   3                 12   \n",
+       "3   2254736       1             4                   4                  7   \n",
+       "4    431534       1             5                   4                 15   \n",
+       "\n",
+       "   days_since_prior_order  product_id  add_to_cart_order  reordered  \\\n",
+       "0                      11         196                  1          0   \n",
+       "1                      15         196                  1          1   \n",
+       "2                      21         196                  1          1   \n",
+       "3                      29         196                  1          1   \n",
+       "4                      28         196                  1          1   \n",
+       "\n",
+       "  product_name  ...  median_days_since_prior_order    frequency_flag  gender  \\\n",
+       "0         Soda  ...                           20.0  Regular customer  Female   \n",
+       "1         Soda  ...                           20.0  Regular customer  Female   \n",
+       "2         Soda  ...                           20.0  Regular customer  Female   \n",
+       "3         Soda  ...                           20.0  Regular customer  Female   \n",
+       "4         Soda  ...                           20.0  Regular customer  Female   \n",
+       "\n",
+       "     state age date_joined family_members family_status  income region  \n",
+       "0  Alabama  31   2/17/2019              3       married   40423  South  \n",
+       "1  Alabama  31   2/17/2019              3       married   40423  South  \n",
+       "2  Alabama  31   2/17/2019              3       married   40423  South  \n",
+       "3  Alabama  31   2/17/2019              3       married   40423  South  \n",
+       "4  Alabama  31   2/17/2019              3       married   40423  South  \n",
+       "\n",
+       "[5 rows x 32 columns]"
+      ]
+     },
+     "execution_count": 20,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# checking the new coloumn\n",
+    "ords_prods_custo.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 21,
+   "id": "a400e720",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Second Step\n",
+    "# analysing regional spending differences with crosstab\n",
+    "\n",
+    "crosstab = pd.crosstab(ords_prods_custo['region'], ords_prods_custo['spender_flag'], dropna = False)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 22,
+   "id": "832a3d64",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th>spender_flag</th>\n",
+       "      <th>High spender</th>\n",
+       "      <th>Low spender</th>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>region</th>\n",
+       "      <th></th>\n",
+       "      <th></th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>Midwest</th>\n",
+       "      <td>149817</td>\n",
+       "      <td>7027107</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>Northeast</th>\n",
+       "      <td>101420</td>\n",
+       "      <td>5320605</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>South</th>\n",
+       "      <td>196523</td>\n",
+       "      <td>10002459</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>West</th>\n",
+       "      <td>147803</td>\n",
+       "      <td>7684007</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "spender_flag  High spender  Low spender\n",
+       "region                                 \n",
+       "Midwest             149817      7027107\n",
+       "Northeast           101420      5320605\n",
+       "South               196523     10002459\n",
+       "West                147803      7684007"
+      ]
+     },
+     "execution_count": 22,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "crosstab"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e061da3b",
+   "metadata": {},
+   "source": [
+    "Expl.:"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "97368140",
+   "metadata": {},
+   "source": [
+    "## 4. Detecting Low-Activity Customers / Low Revenue "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "fff78d14",
+   "metadata": {},
+   "source": [
+    "As the CFO of Instacart is not really interested in those customer who do not generate a lot of revenue, we create a exclusion flag for customer with less than 5 orders and call them low-activity customer. All low-activity customer will be excluded from the data. For the sake of order we will export this sample. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 24,
+   "id": "e2902854",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "ords_prods_custo.loc[ords_prods_custo['max_order'] > 5, 'activity_flag'] = 'High Activity'\n",
+    "ords_prods_custo.loc[ords_prods_custo['max_order'] <= 5, 'activity_flag'] = 'Low Activity'"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 25,
+   "id": "a01ba204",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "High Activity    28521639\n",
+       "Low Activity      2108102\n",
+       "Name: activity_flag, dtype: int64"
+      ]
+     },
+     "execution_count": 25,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# checking the freqeuency of the diffrent flags\n",
+    "ords_prods_custo['activity_flag'].value_counts(dropna = False)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 33,
+   "id": "77b48c2a",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>order_id</th>\n",
+       "      <th>user_id</th>\n",
+       "      <th>order_number</th>\n",
+       "      <th>orders_day_of_week</th>\n",
+       "      <th>order_hour_of_day</th>\n",
+       "      <th>days_since_prior_order</th>\n",
+       "      <th>product_id</th>\n",
+       "      <th>add_to_cart_order</th>\n",
+       "      <th>reordered</th>\n",
+       "      <th>product_name</th>\n",
+       "      <th>...</th>\n",
+       "      <th>frequency_flag</th>\n",
+       "      <th>gender</th>\n",
+       "      <th>state</th>\n",
+       "      <th>age</th>\n",
+       "      <th>date_joined</th>\n",
+       "      <th>family_members</th>\n",
+       "      <th>family_status</th>\n",
+       "      <th>income</th>\n",
+       "      <th>region</th>\n",
+       "      <th>activity_flag</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>2539329</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>2</td>\n",
+       "      <td>8</td>\n",
+       "      <td>11</td>\n",
+       "      <td>196</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>Soda</td>\n",
+       "      <td>...</td>\n",
+       "      <td>Regular customer</td>\n",
+       "      <td>Female</td>\n",
+       "      <td>Alabama</td>\n",
+       "      <td>31</td>\n",
+       "      <td>2/17/2019</td>\n",
+       "      <td>3</td>\n",
+       "      <td>married</td>\n",
+       "      <td>40423</td>\n",
+       "      <td>South</td>\n",
+       "      <td>High Activity</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>2398795</td>\n",
+       "      <td>1</td>\n",
+       "      <td>2</td>\n",
+       "      <td>3</td>\n",
+       "      <td>7</td>\n",
+       "      <td>15</td>\n",
+       "      <td>196</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>Soda</td>\n",
+       "      <td>...</td>\n",
+       "      <td>Regular customer</td>\n",
+       "      <td>Female</td>\n",
+       "      <td>Alabama</td>\n",
+       "      <td>31</td>\n",
+       "      <td>2/17/2019</td>\n",
+       "      <td>3</td>\n",
+       "      <td>married</td>\n",
+       "      <td>40423</td>\n",
+       "      <td>South</td>\n",
+       "      <td>High Activity</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>473747</td>\n",
+       "      <td>1</td>\n",
+       "      <td>3</td>\n",
+       "      <td>3</td>\n",
+       "      <td>12</td>\n",
+       "      <td>21</td>\n",
+       "      <td>196</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>Soda</td>\n",
+       "      <td>...</td>\n",
+       "      <td>Regular customer</td>\n",
+       "      <td>Female</td>\n",
+       "      <td>Alabama</td>\n",
+       "      <td>31</td>\n",
+       "      <td>2/17/2019</td>\n",
+       "      <td>3</td>\n",
+       "      <td>married</td>\n",
+       "      <td>40423</td>\n",
+       "      <td>South</td>\n",
+       "      <td>High Activity</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>2254736</td>\n",
+       "      <td>1</td>\n",
+       "      <td>4</td>\n",
+       "      <td>4</td>\n",
+       "      <td>7</td>\n",
+       "      <td>29</td>\n",
+       "      <td>196</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>Soda</td>\n",
+       "      <td>...</td>\n",
+       "      <td>Regular customer</td>\n",
+       "      <td>Female</td>\n",
+       "      <td>Alabama</td>\n",
+       "      <td>31</td>\n",
+       "      <td>2/17/2019</td>\n",
+       "      <td>3</td>\n",
+       "      <td>married</td>\n",
+       "      <td>40423</td>\n",
+       "      <td>South</td>\n",
+       "      <td>High Activity</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>431534</td>\n",
+       "      <td>1</td>\n",
+       "      <td>5</td>\n",
+       "      <td>4</td>\n",
+       "      <td>15</td>\n",
+       "      <td>28</td>\n",
+       "      <td>196</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>Soda</td>\n",
+       "      <td>...</td>\n",
+       "      <td>Regular customer</td>\n",
+       "      <td>Female</td>\n",
+       "      <td>Alabama</td>\n",
+       "      <td>31</td>\n",
+       "      <td>2/17/2019</td>\n",
+       "      <td>3</td>\n",
+       "      <td>married</td>\n",
+       "      <td>40423</td>\n",
+       "      <td>South</td>\n",
+       "      <td>High Activity</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>5 rows × 33 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   order_id user_id  order_number  orders_day_of_week  order_hour_of_day  \\\n",
+       "0   2539329       1             1                   2                  8   \n",
+       "1   2398795       1             2                   3                  7   \n",
+       "2    473747       1             3                   3                 12   \n",
+       "3   2254736       1             4                   4                  7   \n",
+       "4    431534       1             5                   4                 15   \n",
+       "\n",
+       "   days_since_prior_order  product_id  add_to_cart_order  reordered  \\\n",
+       "0                      11         196                  1          0   \n",
+       "1                      15         196                  1          1   \n",
+       "2                      21         196                  1          1   \n",
+       "3                      29         196                  1          1   \n",
+       "4                      28         196                  1          1   \n",
+       "\n",
+       "  product_name  ...    frequency_flag  gender    state age date_joined  \\\n",
+       "0         Soda  ...  Regular customer  Female  Alabama  31   2/17/2019   \n",
+       "1         Soda  ...  Regular customer  Female  Alabama  31   2/17/2019   \n",
+       "2         Soda  ...  Regular customer  Female  Alabama  31   2/17/2019   \n",
+       "3         Soda  ...  Regular customer  Female  Alabama  31   2/17/2019   \n",
+       "4         Soda  ...  Regular customer  Female  Alabama  31   2/17/2019   \n",
+       "\n",
+       "  family_members family_status income  region  activity_flag  \n",
+       "0              3       married  40423   South  High Activity  \n",
+       "1              3       married  40423   South  High Activity  \n",
+       "2              3       married  40423   South  High Activity  \n",
+       "3              3       married  40423   South  High Activity  \n",
+       "4              3       married  40423   South  High Activity  \n",
+       "\n",
+       "[5 rows x 33 columns]"
+      ]
+     },
+     "execution_count": 33,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# checking new column\n",
+    "ords_prods_custo.head()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "4e56dc8b",
+   "metadata": {},
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 39,
+   "id": "c310b835",
+   "metadata": {},
+   "outputs": [
+    {
+     "ename": "MemoryError",
+     "evalue": "Unable to allocate 3.42 GiB for an array with shape (15, 30629741) and data type object",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[1;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[1;31mMemoryError\u001b[0m                               Traceback (most recent call last)",
+      "Input \u001b[1;32mIn [39]\u001b[0m, in \u001b[0;36m<cell line: 3>\u001b[1;34m()\u001b[0m\n\u001b[0;32m      1\u001b[0m \u001b[38;5;66;03m# creating low activity dataframe\u001b[39;00m\n\u001b[1;32m----> 3\u001b[0m df_low_activity \u001b[38;5;241m=\u001b[39m \u001b[43mords_prods_custo\u001b[49m\u001b[43m[\u001b[49m\u001b[43mords_prods_custo\u001b[49m\u001b[43m[\u001b[49m\u001b[38;5;124;43m'\u001b[39;49m\u001b[38;5;124;43mactivity_flag\u001b[39;49m\u001b[38;5;124;43m'\u001b[39;49m\u001b[43m]\u001b[49m\u001b[43m \u001b[49m\u001b[38;5;241;43m==\u001b[39;49m\u001b[43m \u001b[49m\u001b[38;5;124;43m'\u001b[39;49m\u001b[38;5;124;43mLow Activity\u001b[39;49m\u001b[38;5;124;43m'\u001b[39;49m\u001b[43m]\u001b[49m\n",
+      "File \u001b[1;32m~\\anaconda3\\lib\\site-packages\\pandas\\core\\frame.py:3496\u001b[0m, in \u001b[0;36mDataFrame.__getitem__\u001b[1;34m(self, key)\u001b[0m\n\u001b[0;32m   3494\u001b[0m \u001b[38;5;66;03m# Do we have a (boolean) 1d indexer?\u001b[39;00m\n\u001b[0;32m   3495\u001b[0m \u001b[38;5;28;01mif\u001b[39;00m com\u001b[38;5;241m.\u001b[39mis_bool_indexer(key):\n\u001b[1;32m-> 3496\u001b[0m     \u001b[38;5;28;01mreturn\u001b[39;00m \u001b[38;5;28;43mself\u001b[39;49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43m_getitem_bool_array\u001b[49m\u001b[43m(\u001b[49m\u001b[43mkey\u001b[49m\u001b[43m)\u001b[49m\n\u001b[0;32m   3498\u001b[0m \u001b[38;5;66;03m# We are left with two options: a single key, and a collection of keys,\u001b[39;00m\n\u001b[0;32m   3499\u001b[0m \u001b[38;5;66;03m# We interpret tuples as collections only for non-MultiIndex\u001b[39;00m\n\u001b[0;32m   3500\u001b[0m is_single_key \u001b[38;5;241m=\u001b[39m \u001b[38;5;28misinstance\u001b[39m(key, \u001b[38;5;28mtuple\u001b[39m) \u001b[38;5;129;01mor\u001b[39;00m \u001b[38;5;129;01mnot\u001b[39;00m is_list_like(key)\n",
+      "File \u001b[1;32m~\\anaconda3\\lib\\site-packages\\pandas\\core\\frame.py:3551\u001b[0m, in \u001b[0;36mDataFrame._getitem_bool_array\u001b[1;34m(self, key)\u001b[0m\n\u001b[0;32m   3549\u001b[0m key \u001b[38;5;241m=\u001b[39m check_bool_indexer(\u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39mindex, key)\n\u001b[0;32m   3550\u001b[0m indexer \u001b[38;5;241m=\u001b[39m key\u001b[38;5;241m.\u001b[39mnonzero()[\u001b[38;5;241m0\u001b[39m]\n\u001b[1;32m-> 3551\u001b[0m \u001b[38;5;28;01mreturn\u001b[39;00m \u001b[38;5;28;43mself\u001b[39;49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43m_take_with_is_copy\u001b[49m\u001b[43m(\u001b[49m\u001b[43mindexer\u001b[49m\u001b[43m,\u001b[49m\u001b[43m \u001b[49m\u001b[43maxis\u001b[49m\u001b[38;5;241;43m=\u001b[39;49m\u001b[38;5;241;43m0\u001b[39;49m\u001b[43m)\u001b[49m\n",
+      "File \u001b[1;32m~\\anaconda3\\lib\\site-packages\\pandas\\core\\generic.py:3716\u001b[0m, in \u001b[0;36mNDFrame._take_with_is_copy\u001b[1;34m(self, indices, axis)\u001b[0m\n\u001b[0;32m   3708\u001b[0m \u001b[38;5;28;01mdef\u001b[39;00m \u001b[38;5;21m_take_with_is_copy\u001b[39m(\u001b[38;5;28mself\u001b[39m: NDFrameT, indices, axis\u001b[38;5;241m=\u001b[39m\u001b[38;5;241m0\u001b[39m) \u001b[38;5;241m-\u001b[39m\u001b[38;5;241m>\u001b[39m NDFrameT:\n\u001b[0;32m   3709\u001b[0m     \u001b[38;5;124;03m\"\"\"\u001b[39;00m\n\u001b[0;32m   3710\u001b[0m \u001b[38;5;124;03m    Internal version of the `take` method that sets the `_is_copy`\u001b[39;00m\n\u001b[0;32m   3711\u001b[0m \u001b[38;5;124;03m    attribute to keep track of the parent dataframe (using in indexing\u001b[39;00m\n\u001b[1;32m   (...)\u001b[0m\n\u001b[0;32m   3714\u001b[0m \u001b[38;5;124;03m    See the docstring of `take` for full explanation of the parameters.\u001b[39;00m\n\u001b[0;32m   3715\u001b[0m \u001b[38;5;124;03m    \"\"\"\u001b[39;00m\n\u001b[1;32m-> 3716\u001b[0m     result \u001b[38;5;241m=\u001b[39m \u001b[38;5;28;43mself\u001b[39;49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43mtake\u001b[49m\u001b[43m(\u001b[49m\u001b[43mindices\u001b[49m\u001b[38;5;241;43m=\u001b[39;49m\u001b[43mindices\u001b[49m\u001b[43m,\u001b[49m\u001b[43m \u001b[49m\u001b[43maxis\u001b[49m\u001b[38;5;241;43m=\u001b[39;49m\u001b[43maxis\u001b[49m\u001b[43m)\u001b[49m\n\u001b[0;32m   3717\u001b[0m     \u001b[38;5;66;03m# Maybe set copy if we didn't actually change the index.\u001b[39;00m\n\u001b[0;32m   3718\u001b[0m     \u001b[38;5;28;01mif\u001b[39;00m \u001b[38;5;129;01mnot\u001b[39;00m result\u001b[38;5;241m.\u001b[39m_get_axis(axis)\u001b[38;5;241m.\u001b[39mequals(\u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39m_get_axis(axis)):\n",
+      "File \u001b[1;32m~\\anaconda3\\lib\\site-packages\\pandas\\core\\generic.py:3701\u001b[0m, in \u001b[0;36mNDFrame.take\u001b[1;34m(self, indices, axis, is_copy, **kwargs)\u001b[0m\n\u001b[0;32m   3692\u001b[0m     warnings\u001b[38;5;241m.\u001b[39mwarn(\n\u001b[0;32m   3693\u001b[0m         \u001b[38;5;124m\"\u001b[39m\u001b[38;5;124mis_copy is deprecated and will be removed in a future version. \u001b[39m\u001b[38;5;124m\"\u001b[39m\n\u001b[0;32m   3694\u001b[0m         \u001b[38;5;124m\"\u001b[39m\u001b[38;5;124m'\u001b[39m\u001b[38;5;124mtake\u001b[39m\u001b[38;5;124m'\u001b[39m\u001b[38;5;124m always returns a copy, so there is no need to specify this.\u001b[39m\u001b[38;5;124m\"\u001b[39m,\n\u001b[0;32m   3695\u001b[0m         \u001b[38;5;167;01mFutureWarning\u001b[39;00m,\n\u001b[0;32m   3696\u001b[0m         stacklevel\u001b[38;5;241m=\u001b[39mfind_stack_level(),\n\u001b[0;32m   3697\u001b[0m     )\n\u001b[0;32m   3699\u001b[0m nv\u001b[38;5;241m.\u001b[39mvalidate_take((), kwargs)\n\u001b[1;32m-> 3701\u001b[0m \u001b[38;5;28;43mself\u001b[39;49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43m_consolidate_inplace\u001b[49m\u001b[43m(\u001b[49m\u001b[43m)\u001b[49m\n\u001b[0;32m   3703\u001b[0m new_data \u001b[38;5;241m=\u001b[39m \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39m_mgr\u001b[38;5;241m.\u001b[39mtake(\n\u001b[0;32m   3704\u001b[0m     indices, axis\u001b[38;5;241m=\u001b[39m\u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39m_get_block_manager_axis(axis), verify\u001b[38;5;241m=\u001b[39m\u001b[38;5;28;01mTrue\u001b[39;00m\n\u001b[0;32m   3705\u001b[0m )\n\u001b[0;32m   3706\u001b[0m \u001b[38;5;28;01mreturn\u001b[39;00m \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39m_constructor(new_data)\u001b[38;5;241m.\u001b[39m__finalize__(\u001b[38;5;28mself\u001b[39m, method\u001b[38;5;241m=\u001b[39m\u001b[38;5;124m\"\u001b[39m\u001b[38;5;124mtake\u001b[39m\u001b[38;5;124m\"\u001b[39m)\n",
+      "File \u001b[1;32m~\\anaconda3\\lib\\site-packages\\pandas\\core\\generic.py:5653\u001b[0m, in \u001b[0;36mNDFrame._consolidate_inplace\u001b[1;34m(self)\u001b[0m\n\u001b[0;32m   5650\u001b[0m \u001b[38;5;28;01mdef\u001b[39;00m \u001b[38;5;21mf\u001b[39m():\n\u001b[0;32m   5651\u001b[0m     \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39m_mgr \u001b[38;5;241m=\u001b[39m \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39m_mgr\u001b[38;5;241m.\u001b[39mconsolidate()\n\u001b[1;32m-> 5653\u001b[0m \u001b[38;5;28;43mself\u001b[39;49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43m_protect_consolidate\u001b[49m\u001b[43m(\u001b[49m\u001b[43mf\u001b[49m\u001b[43m)\u001b[49m\n",
+      "File \u001b[1;32m~\\anaconda3\\lib\\site-packages\\pandas\\core\\generic.py:5641\u001b[0m, in \u001b[0;36mNDFrame._protect_consolidate\u001b[1;34m(self, f)\u001b[0m\n\u001b[0;32m   5639\u001b[0m     \u001b[38;5;28;01mreturn\u001b[39;00m f()\n\u001b[0;32m   5640\u001b[0m blocks_before \u001b[38;5;241m=\u001b[39m \u001b[38;5;28mlen\u001b[39m(\u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39m_mgr\u001b[38;5;241m.\u001b[39mblocks)\n\u001b[1;32m-> 5641\u001b[0m result \u001b[38;5;241m=\u001b[39m \u001b[43mf\u001b[49m\u001b[43m(\u001b[49m\u001b[43m)\u001b[49m\n\u001b[0;32m   5642\u001b[0m \u001b[38;5;28;01mif\u001b[39;00m \u001b[38;5;28mlen\u001b[39m(\u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39m_mgr\u001b[38;5;241m.\u001b[39mblocks) \u001b[38;5;241m!=\u001b[39m blocks_before:\n\u001b[0;32m   5643\u001b[0m     \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39m_clear_item_cache()\n",
+      "File \u001b[1;32m~\\anaconda3\\lib\\site-packages\\pandas\\core\\generic.py:5651\u001b[0m, in \u001b[0;36mNDFrame._consolidate_inplace.<locals>.f\u001b[1;34m()\u001b[0m\n\u001b[0;32m   5650\u001b[0m \u001b[38;5;28;01mdef\u001b[39;00m \u001b[38;5;21mf\u001b[39m():\n\u001b[1;32m-> 5651\u001b[0m     \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39m_mgr \u001b[38;5;241m=\u001b[39m \u001b[38;5;28;43mself\u001b[39;49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43m_mgr\u001b[49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43mconsolidate\u001b[49m\u001b[43m(\u001b[49m\u001b[43m)\u001b[49m\n",
+      "File \u001b[1;32m~\\anaconda3\\lib\\site-packages\\pandas\\core\\internals\\managers.py:631\u001b[0m, in \u001b[0;36mBaseBlockManager.consolidate\u001b[1;34m(self)\u001b[0m\n\u001b[0;32m    629\u001b[0m bm \u001b[38;5;241m=\u001b[39m \u001b[38;5;28mtype\u001b[39m(\u001b[38;5;28mself\u001b[39m)(\u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39mblocks, \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39maxes, verify_integrity\u001b[38;5;241m=\u001b[39m\u001b[38;5;28;01mFalse\u001b[39;00m)\n\u001b[0;32m    630\u001b[0m bm\u001b[38;5;241m.\u001b[39m_is_consolidated \u001b[38;5;241m=\u001b[39m \u001b[38;5;28;01mFalse\u001b[39;00m\n\u001b[1;32m--> 631\u001b[0m \u001b[43mbm\u001b[49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43m_consolidate_inplace\u001b[49m\u001b[43m(\u001b[49m\u001b[43m)\u001b[49m\n\u001b[0;32m    632\u001b[0m \u001b[38;5;28;01mreturn\u001b[39;00m bm\n",
+      "File \u001b[1;32m~\\anaconda3\\lib\\site-packages\\pandas\\core\\internals\\managers.py:1685\u001b[0m, in \u001b[0;36mBlockManager._consolidate_inplace\u001b[1;34m(self)\u001b[0m\n\u001b[0;32m   1683\u001b[0m \u001b[38;5;28;01mdef\u001b[39;00m \u001b[38;5;21m_consolidate_inplace\u001b[39m(\u001b[38;5;28mself\u001b[39m) \u001b[38;5;241m-\u001b[39m\u001b[38;5;241m>\u001b[39m \u001b[38;5;28;01mNone\u001b[39;00m:\n\u001b[0;32m   1684\u001b[0m     \u001b[38;5;28;01mif\u001b[39;00m \u001b[38;5;129;01mnot\u001b[39;00m \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39mis_consolidated():\n\u001b[1;32m-> 1685\u001b[0m         \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39mblocks \u001b[38;5;241m=\u001b[39m \u001b[38;5;28mtuple\u001b[39m(\u001b[43m_consolidate\u001b[49m\u001b[43m(\u001b[49m\u001b[38;5;28;43mself\u001b[39;49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43mblocks\u001b[49m\u001b[43m)\u001b[49m)\n\u001b[0;32m   1686\u001b[0m         \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39m_is_consolidated \u001b[38;5;241m=\u001b[39m \u001b[38;5;28;01mTrue\u001b[39;00m\n\u001b[0;32m   1687\u001b[0m         \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39m_known_consolidated \u001b[38;5;241m=\u001b[39m \u001b[38;5;28;01mTrue\u001b[39;00m\n",
+      "File \u001b[1;32m~\\anaconda3\\lib\\site-packages\\pandas\\core\\internals\\managers.py:2084\u001b[0m, in \u001b[0;36m_consolidate\u001b[1;34m(blocks)\u001b[0m\n\u001b[0;32m   2082\u001b[0m new_blocks: \u001b[38;5;28mlist\u001b[39m[Block] \u001b[38;5;241m=\u001b[39m []\n\u001b[0;32m   2083\u001b[0m \u001b[38;5;28;01mfor\u001b[39;00m (_can_consolidate, dtype), group_blocks \u001b[38;5;129;01min\u001b[39;00m grouper:\n\u001b[1;32m-> 2084\u001b[0m     merged_blocks \u001b[38;5;241m=\u001b[39m \u001b[43m_merge_blocks\u001b[49m\u001b[43m(\u001b[49m\n\u001b[0;32m   2085\u001b[0m \u001b[43m        \u001b[49m\u001b[38;5;28;43mlist\u001b[39;49m\u001b[43m(\u001b[49m\u001b[43mgroup_blocks\u001b[49m\u001b[43m)\u001b[49m\u001b[43m,\u001b[49m\u001b[43m \u001b[49m\u001b[43mdtype\u001b[49m\u001b[38;5;241;43m=\u001b[39;49m\u001b[43mdtype\u001b[49m\u001b[43m,\u001b[49m\u001b[43m \u001b[49m\u001b[43mcan_consolidate\u001b[49m\u001b[38;5;241;43m=\u001b[39;49m\u001b[43m_can_consolidate\u001b[49m\n\u001b[0;32m   2086\u001b[0m \u001b[43m    \u001b[49m\u001b[43m)\u001b[49m\n\u001b[0;32m   2087\u001b[0m     new_blocks \u001b[38;5;241m=\u001b[39m extend_blocks(merged_blocks, new_blocks)\n\u001b[0;32m   2088\u001b[0m \u001b[38;5;28;01mreturn\u001b[39;00m new_blocks\n",
+      "File \u001b[1;32m~\\anaconda3\\lib\\site-packages\\pandas\\core\\internals\\managers.py:2111\u001b[0m, in \u001b[0;36m_merge_blocks\u001b[1;34m(blocks, dtype, can_consolidate)\u001b[0m\n\u001b[0;32m   2104\u001b[0m new_values: ArrayLike\n\u001b[0;32m   2106\u001b[0m \u001b[38;5;28;01mif\u001b[39;00m \u001b[38;5;28misinstance\u001b[39m(blocks[\u001b[38;5;241m0\u001b[39m]\u001b[38;5;241m.\u001b[39mdtype, np\u001b[38;5;241m.\u001b[39mdtype):\n\u001b[0;32m   2107\u001b[0m     \u001b[38;5;66;03m# error: List comprehension has incompatible type List[Union[ndarray,\u001b[39;00m\n\u001b[0;32m   2108\u001b[0m     \u001b[38;5;66;03m# ExtensionArray]]; expected List[Union[complex, generic,\u001b[39;00m\n\u001b[0;32m   2109\u001b[0m     \u001b[38;5;66;03m# Sequence[Union[int, float, complex, str, bytes, generic]],\u001b[39;00m\n\u001b[0;32m   2110\u001b[0m     \u001b[38;5;66;03m# Sequence[Sequence[Any]], SupportsArray]]\u001b[39;00m\n\u001b[1;32m-> 2111\u001b[0m     new_values \u001b[38;5;241m=\u001b[39m \u001b[43mnp\u001b[49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43mvstack\u001b[49m\u001b[43m(\u001b[49m\u001b[43m[\u001b[49m\u001b[43mb\u001b[49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43mvalues\u001b[49m\u001b[43m \u001b[49m\u001b[38;5;28;43;01mfor\u001b[39;49;00m\u001b[43m \u001b[49m\u001b[43mb\u001b[49m\u001b[43m \u001b[49m\u001b[38;5;129;43;01min\u001b[39;49;00m\u001b[43m \u001b[49m\u001b[43mblocks\u001b[49m\u001b[43m]\u001b[49m\u001b[43m)\u001b[49m  \u001b[38;5;66;03m# type: ignore[misc]\u001b[39;00m\n\u001b[0;32m   2112\u001b[0m \u001b[38;5;28;01melse\u001b[39;00m:\n\u001b[0;32m   2113\u001b[0m     bvals \u001b[38;5;241m=\u001b[39m [blk\u001b[38;5;241m.\u001b[39mvalues \u001b[38;5;28;01mfor\u001b[39;00m blk \u001b[38;5;129;01min\u001b[39;00m blocks]\n",
+      "File \u001b[1;32m<__array_function__ internals>:5\u001b[0m, in \u001b[0;36mvstack\u001b[1;34m(*args, **kwargs)\u001b[0m\n",
+      "File \u001b[1;32m~\\anaconda3\\lib\\site-packages\\numpy\\core\\shape_base.py:282\u001b[0m, in \u001b[0;36mvstack\u001b[1;34m(tup)\u001b[0m\n\u001b[0;32m    280\u001b[0m \u001b[38;5;28;01mif\u001b[39;00m \u001b[38;5;129;01mnot\u001b[39;00m \u001b[38;5;28misinstance\u001b[39m(arrs, \u001b[38;5;28mlist\u001b[39m):\n\u001b[0;32m    281\u001b[0m     arrs \u001b[38;5;241m=\u001b[39m [arrs]\n\u001b[1;32m--> 282\u001b[0m \u001b[38;5;28;01mreturn\u001b[39;00m \u001b[43m_nx\u001b[49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43mconcatenate\u001b[49m\u001b[43m(\u001b[49m\u001b[43marrs\u001b[49m\u001b[43m,\u001b[49m\u001b[43m \u001b[49m\u001b[38;5;241;43m0\u001b[39;49m\u001b[43m)\u001b[49m\n",
+      "File \u001b[1;32m<__array_function__ internals>:5\u001b[0m, in \u001b[0;36mconcatenate\u001b[1;34m(*args, **kwargs)\u001b[0m\n",
+      "\u001b[1;31mMemoryError\u001b[0m: Unable to allocate 3.42 GiB for an array with shape (15, 30629741) and data type object"
+     ]
+    }
+   ],
+   "source": [
+    "# creating low activity dataframe\n",
+    "\n",
+    "df_low_activity = ords_prods_custo[ords_prods_custo['activity_flag'] == 'Low Activity']"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 28,
+   "id": "204304ff",
+   "metadata": {},
+   "outputs": [
+    {
+     "ename": "NameError",
+     "evalue": "name 'df_low_activity' is not defined",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[1;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[1;31mNameError\u001b[0m                                 Traceback (most recent call last)",
+      "Input \u001b[1;32mIn [28]\u001b[0m, in \u001b[0;36m<cell line: 1>\u001b[1;34m()\u001b[0m\n\u001b[1;32m----> 1\u001b[0m \u001b[43mdf_low_activity\u001b[49m\u001b[38;5;241m.\u001b[39mhead()\n",
+      "\u001b[1;31mNameError\u001b[0m: name 'df_low_activity' is not defined"
+     ]
+    }
+   ],
+   "source": [
+    "df_low_activity.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "57fcbf47",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# exporting the data set of low-activity customer sample\n",
+    "\n",
+    "df_low_activity.to_pickle(os.path.join(path,'02 Data','02 Prepared Data','low_activity_customer_sample.pkl'))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 37,
+   "id": "aca45038",
+   "metadata": {},
+   "outputs": [
+    {
+     "ename": "MemoryError",
+     "evalue": "Unable to allocate 3.42 GiB for an array with shape (15, 30629741) and data type object",
+     "output_type": "error",
+     "traceback": [
+      "\u001b[1;31m---------------------------------------------------------------------------\u001b[0m",
+      "\u001b[1;31mMemoryError\u001b[0m                               Traceback (most recent call last)",
+      "Input \u001b[1;32mIn [37]\u001b[0m, in \u001b[0;36m<cell line: 3>\u001b[1;34m()\u001b[0m\n\u001b[0;32m      1\u001b[0m \u001b[38;5;66;03m# creating a new data set of high activity customer only\u001b[39;00m\n\u001b[1;32m----> 3\u001b[0m df_high_activity \u001b[38;5;241m=\u001b[39m \u001b[43mords_prods_custo\u001b[49m\u001b[43m[\u001b[49m\u001b[43mords_prods_custo\u001b[49m\u001b[43m[\u001b[49m\u001b[38;5;124;43m'\u001b[39;49m\u001b[38;5;124;43mactivity_flag\u001b[39;49m\u001b[38;5;124;43m'\u001b[39;49m\u001b[43m]\u001b[49m\u001b[43m \u001b[49m\u001b[38;5;241;43m==\u001b[39;49m\u001b[43m \u001b[49m\u001b[38;5;124;43m'\u001b[39;49m\u001b[38;5;124;43mHigh Activity\u001b[39;49m\u001b[38;5;124;43m'\u001b[39;49m\u001b[43m]\u001b[49m\n",
+      "File \u001b[1;32m~\\anaconda3\\lib\\site-packages\\pandas\\core\\frame.py:3496\u001b[0m, in \u001b[0;36mDataFrame.__getitem__\u001b[1;34m(self, key)\u001b[0m\n\u001b[0;32m   3494\u001b[0m \u001b[38;5;66;03m# Do we have a (boolean) 1d indexer?\u001b[39;00m\n\u001b[0;32m   3495\u001b[0m \u001b[38;5;28;01mif\u001b[39;00m com\u001b[38;5;241m.\u001b[39mis_bool_indexer(key):\n\u001b[1;32m-> 3496\u001b[0m     \u001b[38;5;28;01mreturn\u001b[39;00m \u001b[38;5;28;43mself\u001b[39;49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43m_getitem_bool_array\u001b[49m\u001b[43m(\u001b[49m\u001b[43mkey\u001b[49m\u001b[43m)\u001b[49m\n\u001b[0;32m   3498\u001b[0m \u001b[38;5;66;03m# We are left with two options: a single key, and a collection of keys,\u001b[39;00m\n\u001b[0;32m   3499\u001b[0m \u001b[38;5;66;03m# We interpret tuples as collections only for non-MultiIndex\u001b[39;00m\n\u001b[0;32m   3500\u001b[0m is_single_key \u001b[38;5;241m=\u001b[39m \u001b[38;5;28misinstance\u001b[39m(key, \u001b[38;5;28mtuple\u001b[39m) \u001b[38;5;129;01mor\u001b[39;00m \u001b[38;5;129;01mnot\u001b[39;00m is_list_like(key)\n",
+      "File \u001b[1;32m~\\anaconda3\\lib\\site-packages\\pandas\\core\\frame.py:3551\u001b[0m, in \u001b[0;36mDataFrame._getitem_bool_array\u001b[1;34m(self, key)\u001b[0m\n\u001b[0;32m   3549\u001b[0m key \u001b[38;5;241m=\u001b[39m check_bool_indexer(\u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39mindex, key)\n\u001b[0;32m   3550\u001b[0m indexer \u001b[38;5;241m=\u001b[39m key\u001b[38;5;241m.\u001b[39mnonzero()[\u001b[38;5;241m0\u001b[39m]\n\u001b[1;32m-> 3551\u001b[0m \u001b[38;5;28;01mreturn\u001b[39;00m \u001b[38;5;28;43mself\u001b[39;49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43m_take_with_is_copy\u001b[49m\u001b[43m(\u001b[49m\u001b[43mindexer\u001b[49m\u001b[43m,\u001b[49m\u001b[43m \u001b[49m\u001b[43maxis\u001b[49m\u001b[38;5;241;43m=\u001b[39;49m\u001b[38;5;241;43m0\u001b[39;49m\u001b[43m)\u001b[49m\n",
+      "File \u001b[1;32m~\\anaconda3\\lib\\site-packages\\pandas\\core\\generic.py:3716\u001b[0m, in \u001b[0;36mNDFrame._take_with_is_copy\u001b[1;34m(self, indices, axis)\u001b[0m\n\u001b[0;32m   3708\u001b[0m \u001b[38;5;28;01mdef\u001b[39;00m \u001b[38;5;21m_take_with_is_copy\u001b[39m(\u001b[38;5;28mself\u001b[39m: NDFrameT, indices, axis\u001b[38;5;241m=\u001b[39m\u001b[38;5;241m0\u001b[39m) \u001b[38;5;241m-\u001b[39m\u001b[38;5;241m>\u001b[39m NDFrameT:\n\u001b[0;32m   3709\u001b[0m     \u001b[38;5;124;03m\"\"\"\u001b[39;00m\n\u001b[0;32m   3710\u001b[0m \u001b[38;5;124;03m    Internal version of the `take` method that sets the `_is_copy`\u001b[39;00m\n\u001b[0;32m   3711\u001b[0m \u001b[38;5;124;03m    attribute to keep track of the parent dataframe (using in indexing\u001b[39;00m\n\u001b[1;32m   (...)\u001b[0m\n\u001b[0;32m   3714\u001b[0m \u001b[38;5;124;03m    See the docstring of `take` for full explanation of the parameters.\u001b[39;00m\n\u001b[0;32m   3715\u001b[0m \u001b[38;5;124;03m    \"\"\"\u001b[39;00m\n\u001b[1;32m-> 3716\u001b[0m     result \u001b[38;5;241m=\u001b[39m \u001b[38;5;28;43mself\u001b[39;49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43mtake\u001b[49m\u001b[43m(\u001b[49m\u001b[43mindices\u001b[49m\u001b[38;5;241;43m=\u001b[39;49m\u001b[43mindices\u001b[49m\u001b[43m,\u001b[49m\u001b[43m \u001b[49m\u001b[43maxis\u001b[49m\u001b[38;5;241;43m=\u001b[39;49m\u001b[43maxis\u001b[49m\u001b[43m)\u001b[49m\n\u001b[0;32m   3717\u001b[0m     \u001b[38;5;66;03m# Maybe set copy if we didn't actually change the index.\u001b[39;00m\n\u001b[0;32m   3718\u001b[0m     \u001b[38;5;28;01mif\u001b[39;00m \u001b[38;5;129;01mnot\u001b[39;00m result\u001b[38;5;241m.\u001b[39m_get_axis(axis)\u001b[38;5;241m.\u001b[39mequals(\u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39m_get_axis(axis)):\n",
+      "File \u001b[1;32m~\\anaconda3\\lib\\site-packages\\pandas\\core\\generic.py:3701\u001b[0m, in \u001b[0;36mNDFrame.take\u001b[1;34m(self, indices, axis, is_copy, **kwargs)\u001b[0m\n\u001b[0;32m   3692\u001b[0m     warnings\u001b[38;5;241m.\u001b[39mwarn(\n\u001b[0;32m   3693\u001b[0m         \u001b[38;5;124m\"\u001b[39m\u001b[38;5;124mis_copy is deprecated and will be removed in a future version. \u001b[39m\u001b[38;5;124m\"\u001b[39m\n\u001b[0;32m   3694\u001b[0m         \u001b[38;5;124m\"\u001b[39m\u001b[38;5;124m'\u001b[39m\u001b[38;5;124mtake\u001b[39m\u001b[38;5;124m'\u001b[39m\u001b[38;5;124m always returns a copy, so there is no need to specify this.\u001b[39m\u001b[38;5;124m\"\u001b[39m,\n\u001b[0;32m   3695\u001b[0m         \u001b[38;5;167;01mFutureWarning\u001b[39;00m,\n\u001b[0;32m   3696\u001b[0m         stacklevel\u001b[38;5;241m=\u001b[39mfind_stack_level(),\n\u001b[0;32m   3697\u001b[0m     )\n\u001b[0;32m   3699\u001b[0m nv\u001b[38;5;241m.\u001b[39mvalidate_take((), kwargs)\n\u001b[1;32m-> 3701\u001b[0m \u001b[38;5;28;43mself\u001b[39;49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43m_consolidate_inplace\u001b[49m\u001b[43m(\u001b[49m\u001b[43m)\u001b[49m\n\u001b[0;32m   3703\u001b[0m new_data \u001b[38;5;241m=\u001b[39m \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39m_mgr\u001b[38;5;241m.\u001b[39mtake(\n\u001b[0;32m   3704\u001b[0m     indices, axis\u001b[38;5;241m=\u001b[39m\u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39m_get_block_manager_axis(axis), verify\u001b[38;5;241m=\u001b[39m\u001b[38;5;28;01mTrue\u001b[39;00m\n\u001b[0;32m   3705\u001b[0m )\n\u001b[0;32m   3706\u001b[0m \u001b[38;5;28;01mreturn\u001b[39;00m \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39m_constructor(new_data)\u001b[38;5;241m.\u001b[39m__finalize__(\u001b[38;5;28mself\u001b[39m, method\u001b[38;5;241m=\u001b[39m\u001b[38;5;124m\"\u001b[39m\u001b[38;5;124mtake\u001b[39m\u001b[38;5;124m\"\u001b[39m)\n",
+      "File \u001b[1;32m~\\anaconda3\\lib\\site-packages\\pandas\\core\\generic.py:5653\u001b[0m, in \u001b[0;36mNDFrame._consolidate_inplace\u001b[1;34m(self)\u001b[0m\n\u001b[0;32m   5650\u001b[0m \u001b[38;5;28;01mdef\u001b[39;00m \u001b[38;5;21mf\u001b[39m():\n\u001b[0;32m   5651\u001b[0m     \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39m_mgr \u001b[38;5;241m=\u001b[39m \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39m_mgr\u001b[38;5;241m.\u001b[39mconsolidate()\n\u001b[1;32m-> 5653\u001b[0m \u001b[38;5;28;43mself\u001b[39;49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43m_protect_consolidate\u001b[49m\u001b[43m(\u001b[49m\u001b[43mf\u001b[49m\u001b[43m)\u001b[49m\n",
+      "File \u001b[1;32m~\\anaconda3\\lib\\site-packages\\pandas\\core\\generic.py:5641\u001b[0m, in \u001b[0;36mNDFrame._protect_consolidate\u001b[1;34m(self, f)\u001b[0m\n\u001b[0;32m   5639\u001b[0m     \u001b[38;5;28;01mreturn\u001b[39;00m f()\n\u001b[0;32m   5640\u001b[0m blocks_before \u001b[38;5;241m=\u001b[39m \u001b[38;5;28mlen\u001b[39m(\u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39m_mgr\u001b[38;5;241m.\u001b[39mblocks)\n\u001b[1;32m-> 5641\u001b[0m result \u001b[38;5;241m=\u001b[39m \u001b[43mf\u001b[49m\u001b[43m(\u001b[49m\u001b[43m)\u001b[49m\n\u001b[0;32m   5642\u001b[0m \u001b[38;5;28;01mif\u001b[39;00m \u001b[38;5;28mlen\u001b[39m(\u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39m_mgr\u001b[38;5;241m.\u001b[39mblocks) \u001b[38;5;241m!=\u001b[39m blocks_before:\n\u001b[0;32m   5643\u001b[0m     \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39m_clear_item_cache()\n",
+      "File \u001b[1;32m~\\anaconda3\\lib\\site-packages\\pandas\\core\\generic.py:5651\u001b[0m, in \u001b[0;36mNDFrame._consolidate_inplace.<locals>.f\u001b[1;34m()\u001b[0m\n\u001b[0;32m   5650\u001b[0m \u001b[38;5;28;01mdef\u001b[39;00m \u001b[38;5;21mf\u001b[39m():\n\u001b[1;32m-> 5651\u001b[0m     \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39m_mgr \u001b[38;5;241m=\u001b[39m \u001b[38;5;28;43mself\u001b[39;49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43m_mgr\u001b[49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43mconsolidate\u001b[49m\u001b[43m(\u001b[49m\u001b[43m)\u001b[49m\n",
+      "File \u001b[1;32m~\\anaconda3\\lib\\site-packages\\pandas\\core\\internals\\managers.py:631\u001b[0m, in \u001b[0;36mBaseBlockManager.consolidate\u001b[1;34m(self)\u001b[0m\n\u001b[0;32m    629\u001b[0m bm \u001b[38;5;241m=\u001b[39m \u001b[38;5;28mtype\u001b[39m(\u001b[38;5;28mself\u001b[39m)(\u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39mblocks, \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39maxes, verify_integrity\u001b[38;5;241m=\u001b[39m\u001b[38;5;28;01mFalse\u001b[39;00m)\n\u001b[0;32m    630\u001b[0m bm\u001b[38;5;241m.\u001b[39m_is_consolidated \u001b[38;5;241m=\u001b[39m \u001b[38;5;28;01mFalse\u001b[39;00m\n\u001b[1;32m--> 631\u001b[0m \u001b[43mbm\u001b[49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43m_consolidate_inplace\u001b[49m\u001b[43m(\u001b[49m\u001b[43m)\u001b[49m\n\u001b[0;32m    632\u001b[0m \u001b[38;5;28;01mreturn\u001b[39;00m bm\n",
+      "File \u001b[1;32m~\\anaconda3\\lib\\site-packages\\pandas\\core\\internals\\managers.py:1685\u001b[0m, in \u001b[0;36mBlockManager._consolidate_inplace\u001b[1;34m(self)\u001b[0m\n\u001b[0;32m   1683\u001b[0m \u001b[38;5;28;01mdef\u001b[39;00m \u001b[38;5;21m_consolidate_inplace\u001b[39m(\u001b[38;5;28mself\u001b[39m) \u001b[38;5;241m-\u001b[39m\u001b[38;5;241m>\u001b[39m \u001b[38;5;28;01mNone\u001b[39;00m:\n\u001b[0;32m   1684\u001b[0m     \u001b[38;5;28;01mif\u001b[39;00m \u001b[38;5;129;01mnot\u001b[39;00m \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39mis_consolidated():\n\u001b[1;32m-> 1685\u001b[0m         \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39mblocks \u001b[38;5;241m=\u001b[39m \u001b[38;5;28mtuple\u001b[39m(\u001b[43m_consolidate\u001b[49m\u001b[43m(\u001b[49m\u001b[38;5;28;43mself\u001b[39;49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43mblocks\u001b[49m\u001b[43m)\u001b[49m)\n\u001b[0;32m   1686\u001b[0m         \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39m_is_consolidated \u001b[38;5;241m=\u001b[39m \u001b[38;5;28;01mTrue\u001b[39;00m\n\u001b[0;32m   1687\u001b[0m         \u001b[38;5;28mself\u001b[39m\u001b[38;5;241m.\u001b[39m_known_consolidated \u001b[38;5;241m=\u001b[39m \u001b[38;5;28;01mTrue\u001b[39;00m\n",
+      "File \u001b[1;32m~\\anaconda3\\lib\\site-packages\\pandas\\core\\internals\\managers.py:2084\u001b[0m, in \u001b[0;36m_consolidate\u001b[1;34m(blocks)\u001b[0m\n\u001b[0;32m   2082\u001b[0m new_blocks: \u001b[38;5;28mlist\u001b[39m[Block] \u001b[38;5;241m=\u001b[39m []\n\u001b[0;32m   2083\u001b[0m \u001b[38;5;28;01mfor\u001b[39;00m (_can_consolidate, dtype), group_blocks \u001b[38;5;129;01min\u001b[39;00m grouper:\n\u001b[1;32m-> 2084\u001b[0m     merged_blocks \u001b[38;5;241m=\u001b[39m \u001b[43m_merge_blocks\u001b[49m\u001b[43m(\u001b[49m\n\u001b[0;32m   2085\u001b[0m \u001b[43m        \u001b[49m\u001b[38;5;28;43mlist\u001b[39;49m\u001b[43m(\u001b[49m\u001b[43mgroup_blocks\u001b[49m\u001b[43m)\u001b[49m\u001b[43m,\u001b[49m\u001b[43m \u001b[49m\u001b[43mdtype\u001b[49m\u001b[38;5;241;43m=\u001b[39;49m\u001b[43mdtype\u001b[49m\u001b[43m,\u001b[49m\u001b[43m \u001b[49m\u001b[43mcan_consolidate\u001b[49m\u001b[38;5;241;43m=\u001b[39;49m\u001b[43m_can_consolidate\u001b[49m\n\u001b[0;32m   2086\u001b[0m \u001b[43m    \u001b[49m\u001b[43m)\u001b[49m\n\u001b[0;32m   2087\u001b[0m     new_blocks \u001b[38;5;241m=\u001b[39m extend_blocks(merged_blocks, new_blocks)\n\u001b[0;32m   2088\u001b[0m \u001b[38;5;28;01mreturn\u001b[39;00m new_blocks\n",
+      "File \u001b[1;32m~\\anaconda3\\lib\\site-packages\\pandas\\core\\internals\\managers.py:2111\u001b[0m, in \u001b[0;36m_merge_blocks\u001b[1;34m(blocks, dtype, can_consolidate)\u001b[0m\n\u001b[0;32m   2104\u001b[0m new_values: ArrayLike\n\u001b[0;32m   2106\u001b[0m \u001b[38;5;28;01mif\u001b[39;00m \u001b[38;5;28misinstance\u001b[39m(blocks[\u001b[38;5;241m0\u001b[39m]\u001b[38;5;241m.\u001b[39mdtype, np\u001b[38;5;241m.\u001b[39mdtype):\n\u001b[0;32m   2107\u001b[0m     \u001b[38;5;66;03m# error: List comprehension has incompatible type List[Union[ndarray,\u001b[39;00m\n\u001b[0;32m   2108\u001b[0m     \u001b[38;5;66;03m# ExtensionArray]]; expected List[Union[complex, generic,\u001b[39;00m\n\u001b[0;32m   2109\u001b[0m     \u001b[38;5;66;03m# Sequence[Union[int, float, complex, str, bytes, generic]],\u001b[39;00m\n\u001b[0;32m   2110\u001b[0m     \u001b[38;5;66;03m# Sequence[Sequence[Any]], SupportsArray]]\u001b[39;00m\n\u001b[1;32m-> 2111\u001b[0m     new_values \u001b[38;5;241m=\u001b[39m \u001b[43mnp\u001b[49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43mvstack\u001b[49m\u001b[43m(\u001b[49m\u001b[43m[\u001b[49m\u001b[43mb\u001b[49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43mvalues\u001b[49m\u001b[43m \u001b[49m\u001b[38;5;28;43;01mfor\u001b[39;49;00m\u001b[43m \u001b[49m\u001b[43mb\u001b[49m\u001b[43m \u001b[49m\u001b[38;5;129;43;01min\u001b[39;49;00m\u001b[43m \u001b[49m\u001b[43mblocks\u001b[49m\u001b[43m]\u001b[49m\u001b[43m)\u001b[49m  \u001b[38;5;66;03m# type: ignore[misc]\u001b[39;00m\n\u001b[0;32m   2112\u001b[0m \u001b[38;5;28;01melse\u001b[39;00m:\n\u001b[0;32m   2113\u001b[0m     bvals \u001b[38;5;241m=\u001b[39m [blk\u001b[38;5;241m.\u001b[39mvalues \u001b[38;5;28;01mfor\u001b[39;00m blk \u001b[38;5;129;01min\u001b[39;00m blocks]\n",
+      "File \u001b[1;32m<__array_function__ internals>:5\u001b[0m, in \u001b[0;36mvstack\u001b[1;34m(*args, **kwargs)\u001b[0m\n",
+      "File \u001b[1;32m~\\anaconda3\\lib\\site-packages\\numpy\\core\\shape_base.py:282\u001b[0m, in \u001b[0;36mvstack\u001b[1;34m(tup)\u001b[0m\n\u001b[0;32m    280\u001b[0m \u001b[38;5;28;01mif\u001b[39;00m \u001b[38;5;129;01mnot\u001b[39;00m \u001b[38;5;28misinstance\u001b[39m(arrs, \u001b[38;5;28mlist\u001b[39m):\n\u001b[0;32m    281\u001b[0m     arrs \u001b[38;5;241m=\u001b[39m [arrs]\n\u001b[1;32m--> 282\u001b[0m \u001b[38;5;28;01mreturn\u001b[39;00m \u001b[43m_nx\u001b[49m\u001b[38;5;241;43m.\u001b[39;49m\u001b[43mconcatenate\u001b[49m\u001b[43m(\u001b[49m\u001b[43marrs\u001b[49m\u001b[43m,\u001b[49m\u001b[43m \u001b[49m\u001b[38;5;241;43m0\u001b[39;49m\u001b[43m)\u001b[49m\n",
+      "File \u001b[1;32m<__array_function__ internals>:5\u001b[0m, in \u001b[0;36mconcatenate\u001b[1;34m(*args, **kwargs)\u001b[0m\n",
+      "\u001b[1;31mMemoryError\u001b[0m: Unable to allocate 3.42 GiB for an array with shape (15, 30629741) and data type object"
+     ]
+    }
+   ],
+   "source": [
+    "# creating a new data set of high activity customer only\n",
+    "\n",
+    "df_high_activity = ords_prods_custo[ords_prods_custo['activity_flag'] == 'High Activity']"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "75d161c0",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df_high_activity.()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "b6f67f2b",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# exporting the high activity customer sample\n",
+    "\n",
+    "df_high_activity.to_pickle(os.path.join(path,'02 Data','Prepared Data','high_activity_customer_sample.pkl'))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f59097c3",
+   "metadata": {},
+   "source": [
+    "## 5. Marketing & Business: Customer Profiling"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f1f564d1",
+   "metadata": {},
+   "source": [
+    "The marketing and business strategy units at Instacart want to create more-relevant marketing strategies for different products and are, thus, curious about customer profiling in their database. Therefore, we create different customer profiles. (brand loyalty, do ordering habits differ based on customer loyalty, region or is there a connection between age and family status? - Consider the price of orders, the frequency of orders, the products customers are ordering)\n",
+    "\n",
+    "Profiles: \n",
+    "- Age Groups: Young Adult , Adult, Senior\n",
+    "- Income Group: low income < 40.000, middle income > 40.000 & < 100.000, high income >100.000\n",
+    "- Family Status: family_members >= 1 = parent, family_members = 0 = childless\n",
+    "- Departments: \n",
+    "    Babies (18) + Family Status = parent = Young Family\n",
+    "    Bulk (10) + Family Status = parent = Big Family\n",
+    "    No Meat / Seafood (12) = Vegetarian\n",
+    "    Pets (8) = Pet-owner"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "371c08b2",
+   "metadata": {},
+   "source": [
+    "#### Profile: Age Groups "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "7dc95329",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# creating age group flags\n",
+    "\n",
+    "df_high_activity.loc[df_high_activity['age'] <= 30, 'age_group_flag'] = 'Young Adult'\n",
+    "df_high_activity.loc[(df_high_activity['age'] > 30) & (df_high_activity['age'] < 65), 'age_group_flag'] = 'Adult'\n",
+    "df_high_activity.loc[df_high_activity['age'] > 65, 'age_group_flag'] = 'Senior'"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "b0b542af",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# age group flag frequency\n",
+    "df_high_activity['age_group_flag'].value_counts()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3946177d",
+   "metadata": {},
+   "source": [
+    "#### Profile: Income Groups "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "2ce48cfa",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# creating income group flags\n",
+    "\n",
+    "df_high_activity.loc[df_high_activity['income'] <= 40000, 'income_group_flag'] = 'low income'\n",
+    "df_high_activity.loc[(df_high_activity['income'] > 40000) & (df_high_activity['income'] <= 100000), 'income_group_flag'] = 'middle income'\n",
+    "df_high_activity.loc[df_high_activity['income'] > 100000, 'income_group_flag'] = 'high income'"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "d5fb3d8e",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# income group flag frequency\n",
+    "\n",
+    "df_high_activity['income_group_flag'].value_counts()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "bf16e101",
+   "metadata": {},
+   "source": [
+    "#### Profile: Family Status"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "52dbe955",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# creating family group flag. 1 = family (kids), 0 = not family (no kids)\n",
+    "\n",
+    "df_high_activity.loc[df_high_activity['family_members'] > 0, 'family_flag'] = \"parent\"\n",
+    "df_high_activity.loc[df_high_activity['family_members'] == 0, 'family_flag'] = 'childless'"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "6996621f",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# family group flag frequency\n",
+    "\n",
+    "df_high_activity['family_flag'].value_counts()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "77849267",
+   "metadata": {},
+   "source": [
+    "#### Profile: Departments "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "0f501227",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "#Using loc with multipli conditions (Babies (18) + Family Status = parent = Young Family)\n",
+    "\n",
+    "df_high_activity.loc[(df_high_activity['department_id'] == 18) & (df_high_activity['family_flag'] = parent)] = 'Young Family'"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "2a2f1646",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df_high_activity['Young Family'].value_counts()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "f6e1b877",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "#Using loc with multipli conditions (Babies (18) + Family Status = parent = Young Family)\n",
+    "\n",
+    "df_high_activity.loc[df_high_activity['department_id'] != 12] = 'Vegetarian'"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "32e32356",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df_high_activity['Vegetarian'].value_counts()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "d247a718",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# creating a pet-owner flag\n",
+    "\n",
+    "df_pet_owner = df_high_activity.loc[df_high_activity['department_id'] == 8] = 'Pet-owner'"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "f7eb8321",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df_high_activity['Pet-owner'].value_counts()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "4b7227c6",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3d485cd7",
+   "metadata": {},
+   "source": [
+    "## 6. Visualisation of Profiles"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "6f7e8401",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "250eef57",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "c54957e2",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "0d434d82",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "2564a9a2",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7a1ad6a9",
+   "metadata": {},
+   "source": [
+    "## 7. Aggregation / Customer-Profiles"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "db5871b3",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "990ebe27",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "86699a98",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "markdown",
+   "id": "33628752",
+   "metadata": {},
+   "source": [
+    "## 8. Comparing Customer Profiles with Regions"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "e8bea7a6",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "51d798e3",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "1fd4efc8",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  },
+  {
+   "cell_type": "markdown",
+   "id": "b4d90929",
+   "metadata": {},
+   "source": [
+    "## 9. Illustration of Results"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "9054a308",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.9.12"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
