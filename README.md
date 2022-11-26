@@ -20,12 +20,12 @@ customers in their system and how their ordering behaviors differ. For example:
 
 ### Overview of the whole module 
 
-Jupyter Fundamentals & Python Data Types
-Introduction to Pandas
-Data Wrangling & Subsetting
-Data Consistency Checks
-Combining & Exporting Data
-Deriving New Variables
-Grouping & Aggregating Data
-Intro to Data Visualization with Python
-Coding Etiquette & Excel Reporting
+* Jupyter Fundamentals & Python Data Types
+* Introduction to Pandas
+* Data Wrangling & Subsetting
+* Data Consistency Checks
+* Combining & Exporting Data
+* Deriving New Variables
+* Grouping & Aggregating Data
+* Intro to Data Visualization with Python
+* Coding Etiquette & Excel Reporting
