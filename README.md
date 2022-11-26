@@ -2,7 +2,7 @@
 In this repo you can find my Python scripts, which I developed as part of my training as a data analyst at CareerFoundry.
 
 ## About the Project "Instacart Grocery Basket Analysis"
-Instacart is an online grocery store that operates through an app. Instacart already has very good sales, but they want to uncover more information about their sales patterns. My task as a data analyst for Instacart is to perform an initial data and exploratory analysis of some of their data in order to derive insights and suggest strategies for better segmentation based on the provided criteria.
+Instacart is an online grocery store that operates through an app. Instacart already has very good sales, but they want to uncover more information about their sales patterns. My task as a data analyst for Instacart was to perform an initial data and exploratory analysis of some of their data in order to derive insights and suggest strategies for better segmentation based on the provided criteria.
 
 PS: Analysis has been conducted using Python and relevant libraries (pandas, NumPy, os, matplotlib, scipy, and seaborn), in Jupyter Notebook. 
 
