@@ -34,30 +34,30 @@ customers in their system and how their ordering behaviors differ. For example:
 ● Download data and import into notebook as a pandas dataframe
 ● Conduct basic descriptive exploratory tasks
 
-####Exercise 4.4: Data Wrangling & Subsetting
+#### Exercise 4.4: Data Wrangling & Subsetting
 ● Change data types of identifier variables into more suitable types and rename columns where needed
 ● Access values and determine their meaning using a data dictionary
 ● Create new dataframes based on a certain criteria
 ● Answer questions about user activities based on variable frequencies
 
-####Exercise 4.5: Data Consistency Checks
+#### Exercise 4.5: Data Consistency Checks
 ● Fix mixed-type variables
 ● Uncover and deal with missing values
 ● Uncover and remove duplicates
 
-####Exercise 4.6: Combining & Exporting Data
+#### Exercise 4.6: Combining & Exporting Data
 ● Merge a set of given dataframes
 ● Analyze results from merge flag frequencies
 ● Export merged data as a pickle file
 
-####Exercise 4.7: Deriving New Variables
+#### Exercise 4.7: Deriving New Variables
 ● Create new columns using conditional logic in the form of if-statements, user-defined functions, the loc() function, and for-loops
 
-####Exercise 4.8: Grouping & Aggregating Data
+#### Exercise 4.8: Grouping & Aggregating Data
 ● Create flags, for instance, a loyalty flag, and place them in new columns
 ● Create summary columns of descriptive statistics using the groupby() function
 
-####Exercise 4.9: Intro to Data Visualization with Python
+#### Exercise 4.9: Intro to Data Visualization with Python
 ● Import and prepare a customer data set
 ● Merge customer data with other project data
 ● Create histograms, bar charts, line charts, and scatterplots for different variables and relationships between variables
